@@ -2,7 +2,8 @@ schema: spec-driven
 context: |
   Public installation control repository for Fabric Delivery OS on GitHub Free.
   Initial specifications are merged. Only the bounded manual synthetic gate
-  proof has separate human authorization; its workflow requires human merge.
+  proof had separate human authorization. Approval/rejection were observed;
+  bot denial remains untested. Its workflow is disabled and environment removed.
   No cloud bootstrap or real delivery is authorized.
   Required-reviewer jobs must execute here, not in private solution callers.
   Runtime agents cannot write control code, administer protections, or approve

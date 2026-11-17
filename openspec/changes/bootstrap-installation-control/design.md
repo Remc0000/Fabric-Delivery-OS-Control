@@ -6,8 +6,10 @@ human-authorization and information-boundary contracts.
 
 The initial framework and control specifications were human-merged. Only the
 bounded synthetic proof subsequently received explicit implementation
-authorization. Its workflow needs a separate human review and merge before
-dispatch. No released runtime version is implied.
+authorization. After the human merged its workflow, the native approval and
+rejection cases were exercised. Bot denial remains untested. The temporary
+workflow was disabled before its environment was removed. No released runtime
+version is implied.
 
 ## Goals / Non-Goals
 
@@ -115,12 +117,15 @@ after its exclusion of Azure/Fabric operations was stated. This approval does
 not cover any private dispatcher, source access, Foundry, or worker bootstrap.
 The implementation branch is not permission for the assistant to merge it.
 
-The proposed workflow is `.github/workflows/approval-smoke-test.yml`. It has
+The tested workflow was `.github/workflows/approval-smoke-test.yml` at commit
+`63fae0675c10d91586350c0d7d1fbe1931443327`. Its
+[immutable definition](https://github.com/Remc0000/Fabric-Delivery-OS-Control/blob/63fae0675c10d91586350c0d7d1fbe1931443327/.github/workflows/approval-smoke-test.yml)
+remains available after cleanup. It had
 only `workflow_dispatch`, no inputs, no checkout or external actions, empty
 token permissions, and one fixed shell command that prints
-`synthetic-action-completed`. Its single job requires the temporary
+`synthetic-action-completed`. Its single job required the temporary
 `approval-smoke-test` environment and a `refs/heads/main` workflow context.
-The runner is GitHub-hosted and its execution timeout is two minutes.
+The runner was GitHub-hosted and its execution timeout was two minutes.
 
 Configure the native environment with the designated installation human as
 its sole required reviewer, `prevent_self_review=false` for the selected solo
@@ -140,14 +145,30 @@ log inspection after execution. Pending evidence is not a successful test.
 | Check | Current evidence |
 | --- | --- |
 | Human authorization of bounded scope | Explicit conversation approval on 2026-11-17 |
-| Human merge of exact workflow revision | Pending |
+| Human merge of exact workflow revision | Human merged [control PR 3](https://github.com/Remc0000/Fabric-Delivery-OS-Control/pull/3); both runs used commit `63fae0675c10d91586350c0d7d1fbe1931443327`, whose workflow content matched the reviewed definition |
 | Required reviewer, branch-only restriction, disabled bypass | Configured on 2026-11-17; fresh API reads verified the sole designated human reviewer, `prevent_self_review=false`, `can_admins_bypass=false`, and exactly one deployment rule of type `branch` named `main` |
-| Job blocked with no executed steps | Not run |
-| Human-approved run executes fixed action | Not run |
-| Separately human-rejected run executes no action | Not run |
+| Job blocked with no executed steps | Observed `status=waiting`, no runner, and `steps=[]` for both runs before either review decision |
+| Human-approved run executes fixed action | [Run 44166554472](https://github.com/Remc0000/Fabric-Delivery-OS-Control/actions/runs/44166554472): review history `approved` by the designated human; conclusion `success`; fixed completion step succeeded |
+| Separately human-rejected run executes no action | [Run 44166850165](https://github.com/Remc0000/Fabric-Delivery-OS-Control/actions/runs/44166850165): review history `rejected` by the designated human; conclusion `failure`; no runner and `steps=[]` |
 | Representative non-reviewer/bot cannot approve | Untested; no authorized test identity supplied |
-| Public logs and artifacts contain only permitted synthetic output | Not run |
-| Temporary environment removed and workflow disabled | Pending completion of proof |
+| Public logs and artifacts contain only permitted synthetic output | Complete approved-run log inspected: GitHub runner/setup metadata and the literal synthetic command/status only; rejected run executed no steps; artifact counts were zero for both |
+| Temporary environment removed and workflow disabled | After both runs completed, API verified workflow `disabled_manually` before deleting the temporary environment; fresh environment listing returned zero configured environments |
+
+Review history was read from each run's `/approvals` endpoint after the human
+reported their GitHub UI action. The assistant dispatched and inspected runs
+but did not submit an approval or rejection. GitHub's default setup/teardown
+steps are platform metadata, not additional solution processing. No source
+records, private checkout, model call, or Azure/Fabric operation occurred.
+
+The rejection is an expected failed workflow, not an implementation failure
+or a cancellation. A successful approved run alone would not have established
+this negative case. Conversely, neither outcome establishes refusal of an
+unauthorized agent identity, manifest binding, replay prevention, federation,
+or worker isolation.
+
+The remaining disabled workflow definition is removed through a separate
+human-reviewed evidence/cleanup PR. No additional workflow activation or cloud
+bootstrap is authorized by recording these results.
 
 After capturing evidence, disable the workflow before deleting the temporary
 environment so a later manual dispatch cannot recreate it without protection.
