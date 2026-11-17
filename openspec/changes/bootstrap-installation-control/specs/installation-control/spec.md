@@ -28,6 +28,16 @@ MUST list only authorized human reviewers for its action.
 - **WHEN** a non-reviewer agent identity attempts to release the waiting job
 - **THEN** it cannot satisfy the native human reviewer requirement
 
+#### Scenario: An ephemeral Actions bot tests the approval boundary
+- **WHEN** the authorized synthetic probe uses its own GitHub Actions token to attempt approval
+- **THEN** it first verifies successful authenticated reads, reviewer ineligibility, and a waiting gate without execution
+- **AND** it records only a classified authorization denial with the same gate still blocked as a successful negative case
+- **AND** the result identifies the tested token class without claiming all future runtime identities were tested
+
+#### Scenario: A bot probe encounters an unrelated failure
+- **WHEN** reads fail, no native gate is pending, approval succeeds, or the denial reason is unclassified
+- **THEN** the probe fails explicitly rather than treating that failure as proof of reviewer enforcement
+
 ### Requirement: Approval refers to a frozen private request
 Every control run SHALL refer to exactly one opaque request ID bound to an
 immutable private review manifest. The human SHALL be able to review the
