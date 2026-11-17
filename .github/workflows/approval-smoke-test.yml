@@ -1,0 +1,19 @@
+name: Synthetic approval proof
+run-name: Synthetic approval proof
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  synthetic-action:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    name: Human-gated synthetic action
+    environment: approval-smoke-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Record synthetic completion
+        shell: bash
+        run: printf '%s\n' 'synthetic-action-completed'

@@ -89,3 +89,23 @@ Azure, or operate Fabric.
 - **WHEN** the synthetic approval behavior is observed
 - **THEN** the test stops and reports only that gate-level result
 - **AND** it does not claim that worker isolation or production deployment is proven
+
+#### Scenario: An unreviewed branch or automatic event attempts the proof
+- **WHEN** the synthetic workflow is evaluated outside a manual dispatch from branch `main`
+- **THEN** its synthetic action cannot execute
+- **AND** the temporary environment permits branch `main`, not a tag or another branch
+
+#### Scenario: The designated human rejects the separate negative run
+- **WHEN** the human rejects the waiting synthetic job through GitHub
+- **THEN** the fixed completion step does not execute
+- **AND** the proof records the actual rejection rather than a cancellation as evidence
+
+#### Scenario: Administrator bypass cannot be read through the API
+- **WHEN** the API cannot expose the configured bypass setting
+- **THEN** dispatch remains blocked until a human verifies disabled bypass in environment settings
+- **AND** the evidence distinguishes human settings verification from API verification
+
+#### Scenario: The synthetic proof is cleaned up
+- **WHEN** all test runs are terminal and their evidence has been recorded
+- **THEN** the workflow is disabled before its temporary environment is deleted
+- **AND** cleanup cannot leave an enabled workflow pointing to a missing unprotected environment
