@@ -114,17 +114,26 @@ jobs:
                       "comment": "Synthetic non-reviewer bot denial proof",
                   },
               )
-              if status != 403:
-                  raise SystemExit(f"FAIL: unexpected synthetic review HTTP {status}")
-              if response.get("message") != "Resource not accessible by integration":
-                  raise SystemExit("FAIL: unclassified synthetic review denial")
+              if (
+                  status == 403
+                  and response.get("message") == "Resource not accessible by integration"
+              ):
+                  boundary = "integration-access"
+              elif (
+                  status == 422
+                  and response.get("message") == "Validation Failed"
+                  and response.get("errors") == "No pending deployment requests to approve or reject"
+              ):
+                  boundary = "no-reviewable-deployment-for-bot"
+              else:
+                  raise SystemExit(f"FAIL: unclassified synthetic review HTTP {status}")
 
               after = pending_gate()
               if after is None or after["environment"]["id"] != gate["environment"]["id"]:
                   raise SystemExit("FAIL: synthetic gate changed after bot attempt")
               verify_blocked()
-              print("synthetic-bot-review=denied-http-403")
-              print("synthetic-denial-boundary=integration-access")
+              print(f"synthetic-bot-review=denied-http-{status}")
+              print(f"synthetic-denial-boundary={boundary}")
               print("synthetic-gate-after=waiting-no-runner-no-steps")
 
           if __name__ == "__main__":

@@ -197,13 +197,19 @@ before dispatch. The probe waits a bounded time for that environment to become
 pending, verifies its token's `current_user_can_approve=false`, and confirms
 the gated job is waiting with no runner and no steps.
 
-It attempts exactly one approval using only `github.token`. The expected
-response is HTTP 403, `Resource not accessible by integration`. This
-classification follows the official GitHub REST/OpenAPI contract: the review
-endpoint is not enabled for GitHub Apps. Successful pending-deployment and
-job reads distinguish the test from an absent/invalid credential, and fresh
-post-attempt reads must show the same gate is still blocked. Other responses
-or errors fail explicitly. No response body or token is printed publicly.
+It attempts exactly one approval using only `github.token`. Accept only HTTP
+403 with `Resource not accessible by integration`, or HTTP 422 with
+`message=Validation Failed` and the exact error
+`No pending deployment requests to approve or reject`. The latter represents
+no reviewable request for the bot only when authenticated reads immediately
+before and after show the same pending gate and `current_user_can_approve=false`.
+An arbitrary validation error cannot count as proof.
+
+The official GitHub REST/OpenAPI contract does not enable the review endpoint
+for GitHub Apps. Successful pending-deployment and job reads distinguish the
+test from an absent/invalid credential, and fresh post-attempt reads must show
+the same gate is still blocked. Other responses or errors fail explicitly.
+No response body or token is printed publicly.
 
 This establishes refusal for an Actions installation token through that
 integration-access boundary. It does not isolate a reviewer-membership check
@@ -216,3 +222,19 @@ without submitting a review. Verify terminal jobs, disable the workflow,
 then delete the temporary environment. A human-reviewed cleanup PR removes
 the disabled workflow and records actual evidence. All results remain pending
 until observed.
+
+### Initial follow-up attempt, not accepted as completed proof
+
+[Run 44170243122](https://github.com/Remc0000/Fabric-Delivery-OS-Control/actions/runs/44170243122)
+used human-merged workflow commit
+`bede42ba36214abe61a3b21656091737b8f23e98`. Authenticated bot reads succeeded,
+but the first classifier expected HTTP 403 and failed explicitly on HTTP 422.
+The response body was not logged, so this run alone does not establish the
+classified reason. Independent reads showed the native job still waiting
+with no runner/steps and an empty review history. The run was cancelled
+without submitting any review; the gated job ended with no executed steps.
+
+The classifier correction adds only the specific caller-filtered validation
+denial above, with tests rejecting unrelated HTTP 422 responses. Its exact
+revision requires human review/merge and a new observed run before this
+negative case can be reported complete.

@@ -26,15 +26,17 @@ only branch `main`, and disable administrator bypass.
 One job waits at that gate. An independent synthetic probe uses only its
 ephemeral GitHub Actions token with `actions: read` and `deployments: write`,
 not the human dispatcher's credentials. It verifies authenticated reads work
-and that the bot is ineligible, attempts approval once, and requires HTTP 403
-with the classified integration-access denial. It must then confirm the same
-gate is still waiting with no runner and no executed steps.
+and that the bot is ineligible, attempts approval once, and requires a
+classified refusal: HTTP 403 for integration access, or HTTP 422 with the
+exact validation error that no deployment is reviewable by this bot. It must
+then confirm the same gate is still waiting with no runner and no executed steps.
 
 This tests the Actions installation token, not an independently installed
 future runtime App. An API unsupported for integrations is an integration
 authentication boundary, not evidence that every reviewer policy or future
 identity has been tested. Unexpected responses, missing gates, read failures,
-or a released job fail the proof rather than count as refusal.
+or a released job fail the proof rather than count as refusal. An arbitrary
+HTTP 422, such as a malformed payload, does not count as proof.
 
 Do not manually approve this run. After evidence collection, cancel the waiting
 run, verify termination, disable the workflow, and only then delete its

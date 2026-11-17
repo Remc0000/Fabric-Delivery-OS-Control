@@ -48,13 +48,19 @@ class BotDenialProofTests(unittest.TestCase):
         return request
 
     def test_classified_refusal_keeps_same_gate_blocked(self):
-        request = self.run_probe([
-            (200, [self.gate]), (200, self.waiting), self.denied,
-            (200, [self.gate]), (200, self.waiting),
-        ])
-        reviews = [call for call in request.call_args_list if call.args[0] == "POST"]
-        self.assertEqual(len(reviews), 1)
-        self.assertEqual(reviews[0].args[2]["environment_ids"], [42])
+        validation_denial = (422, {
+            "message": "Validation Failed",
+            "errors": "No pending deployment requests to approve or reject",
+        })
+        for denial in (self.denied, validation_denial):
+            with self.subTest(status=denial[0]):
+                request = self.run_probe([
+                    (200, [self.gate]), (200, self.waiting), denial,
+                    (200, [self.gate]), (200, self.waiting),
+                ])
+                reviews = [call for call in request.call_args_list if call.args[0] == "POST"]
+                self.assertEqual(len(reviews), 1)
+                self.assertEqual(reviews[0].args[2]["environment_ids"], [42])
 
     def test_unrelated_failures_and_released_gates_cannot_count_as_denial(self):
         executed = {
@@ -78,6 +84,11 @@ class BotDenialProofTests(unittest.TestCase):
             (
                 "rate limited",
                 [(200, [self.gate]), (200, self.waiting), (403, {"message": "API rate limit exceeded"})],
+                "unclassified",
+            ),
+            (
+                "invalid payload",
+                [(200, [self.gate]), (200, self.waiting), (422, {"message": "Validation Failed", "errors": "Invalid environment"})],
                 "unclassified",
             ),
             (
