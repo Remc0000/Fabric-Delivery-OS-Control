@@ -4,38 +4,35 @@ Public control-plane repository for one Fabric Delivery OS installation.
 
 ## Status
 
-The initial specifications are merged. A separately human-authorized,
-manual-only synthetic approval proof is proposed in
-`.github/workflows/approval-smoke-test.yml`. It performs only a fixed synthetic
-log message after native human approval. It has no checkout, action
-dependencies, token permissions, cloud access, or private inputs.
+The initial specifications are merged. A separately human-authorized
+synthetic proof demonstrated native human approval and rejection on GitHub
+Free in this public repository. Both runs waited without a runner or executed
+steps before the human made a decision.
 
-The human must review and merge this workflow before it can be dispatched.
-Native gate behavior is not proven until the human-operated tests complete.
+The temporary workflow was disabled before its environment was removed.
+The evidence/cleanup change removes its executable definition; until that
+change is human-merged, the definition on `main` must remain disabled.
 No runtime, private dispatcher, federation, or Azure/Fabric operations are
-implemented or authorized.
+implemented or authorized. The unauthorized-bot case remains untested.
 
-## Synthetic proof procedure
+## Synthetic proof results
 
-The temporary `approval-smoke-test` environment must require the designated
-human reviewer, permit only the `main` branch, and disallow administrator
-bypass. The explicitly selected solo-human profile permits the initiating
-human to approve; this does not authorize an assistant to use their approval
-credentials. Verify the bypass setting in GitHub's environment settings if
-the API does not expose it. Do not dispatch while any protection is unverified.
+The [approved run](https://github.com/Remc0000/Fabric-Delivery-OS-Control/actions/runs/44166554472)
+executed only the fixed synthetic completion command after the designated
+human approved through GitHub. The separate
+[rejected run](https://github.com/Remc0000/Fabric-Delivery-OS-Control/actions/runs/44166850165)
+failed with no runner assigned and no steps executed after the human rejected
+it through GitHub. This failure is the expected negative-case result.
 
-After human merge and protection verification, dispatch from `main`. Verify
-that the job is waiting and has executed no steps. The human then uses
-GitHub's **Review deployments** control to approve that run. Dispatch a second
-run and have the human reject it; its synthetic step must not execute.
-Record run links, revisions, reviewer decisions, actual results, and any
-untested bot case in the OpenSpec design. An assistant must never approve or
-reject either run using the human's token.
+Reviewer requirements, branch-only `main` restrictions, and disabled
+administrator bypass were verified by fresh API reads before dispatch.
+The chosen solo-human profile allowed the initiating human to approve.
+The assistant did not submit either review decision.
 
-After inspecting the public output, disable the test workflow and remove only
-its temporary environment. Keep the workflow disabled until a human-reviewed
-cleanup PR removes or intentionally replaces it. This proof grants no
-authority to activate real delivery.
+Public logs contained GitHub setup metadata and the fixed synthetic
+command/status; neither run produced artifacts. The exact workflow revision,
+review histories, cleanup, and remaining proof gaps are recorded in the
+OpenSpec design. This gate-only result does not authorize real delivery.
 
 ## Boundary
 
