@@ -1,9 +1,12 @@
 schema: spec-driven
 context: |
   Public installation control repository for Fabric Delivery OS on GitHub Free.
-  Draft specifications only; no executable workflow or bootstrap is authorized.
+  Initial specifications are merged. Only the bounded manual synthetic gate
+  proof has separate human authorization; its workflow requires human merge.
+  No cloud bootstrap or real delivery is authorized.
   Required-reviewer jobs must execute here, not in private solution callers.
-  Agents cannot write control code, administer protections, or approve work.
+  Runtime agents cannot write control code, administer protections, or approve
+  work. Human-authorized installation bootstrap is a separate authority.
   Keep all source identifiers, manifests, prompts, solution code and detailed
   logs private. Public runs use opaque references and allowlisted status only.
   One-person operation permits the same human in multiple explicit roles.

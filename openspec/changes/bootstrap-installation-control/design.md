@@ -4,9 +4,10 @@ This is the public control repository of one installation, not a central
 multi-customer control service. It implements the public framework's proposed
 human-authorization and information-boundary contracts.
 
-There are no executable workflows or configured gates yet. The framework and
-this proposal must be reviewed together; no released runtime version is
-implied by their existence.
+The initial framework and control specifications were human-merged. Only the
+bounded synthetic proof subsequently received explicit implementation
+authorization. Its workflow needs a separate human review and merge before
+dispatch. No released runtime version is implied.
 
 ## Goals / Non-Goals
 
@@ -106,3 +107,51 @@ run it together with the designated human, and remove temporary test-only
 resources after capturing evidence. Production gate/bootstrap work follows
 only after a separate approval. Any unsupported capability leaves the
 installation inactive; there is no weaker automatic fallback.
+
+## Synthetic proof implementation and evidence
+
+On 2026-11-17 the human authorized the bounded gate-only proof in conversation,
+after its exclusion of Azure/Fabric operations was stated. This approval does
+not cover any private dispatcher, source access, Foundry, or worker bootstrap.
+The implementation branch is not permission for the assistant to merge it.
+
+The proposed workflow is `.github/workflows/approval-smoke-test.yml`. It has
+only `workflow_dispatch`, no inputs, no checkout or external actions, empty
+token permissions, and one fixed shell command that prints
+`synthetic-action-completed`. Its single job requires the temporary
+`approval-smoke-test` environment and a `refs/heads/main` workflow context.
+The runner is GitHub-hosted and its execution timeout is two minutes.
+
+Configure the native environment with the designated installation human as
+its sole required reviewer, `prevent_self_review=false` for the selected solo
+profile, administrator bypass disabled, and only the branch `main` allowed.
+The deployment policy must distinguish branch `main` from a tag of that name.
+Re-read the reviewer and branch rules after creation. If the API does not
+expose administrator bypass, require a human settings inspection and record
+that verification method; an API write accepting an unknown field is not
+proof that bypass is disabled. No dispatch precedes complete verification.
+
+Before each dispatch, confirm that the environment policy is still verified
+and that the current default-branch workflow revision is the human-merged
+revision. Use no public input containing solution details. Record the actual
+run links, workflow commit, reviewer decisions, step results, and sanitized
+log inspection after execution. Pending evidence is not a successful test.
+
+| Check | Current evidence |
+| --- | --- |
+| Human authorization of bounded scope | Explicit conversation approval on 2026-11-17 |
+| Human merge of exact workflow revision | Pending |
+| Required reviewer, branch-only restriction, disabled bypass | Configured on 2026-11-17; fresh API reads verified the sole designated human reviewer, `prevent_self_review=false`, `can_admins_bypass=false`, and exactly one deployment rule of type `branch` named `main` |
+| Job blocked with no executed steps | Not run |
+| Human-approved run executes fixed action | Not run |
+| Separately human-rejected run executes no action | Not run |
+| Representative non-reviewer/bot cannot approve | Untested; no authorized test identity supplied |
+| Public logs and artifacts contain only permitted synthetic output | Not run |
+| Temporary environment removed and workflow disabled | Pending completion of proof |
+
+After capturing evidence, disable the workflow before deleting the temporary
+environment so a later manual dispatch cannot recreate it without protection.
+Do not delete the environment while any test run is waiting or active. A
+human-reviewed cleanup PR can then remove the disabled workflow. Never report
+the gate proof as complete while its required manual cases remain pending;
+the missing bot case must remain explicitly unproven.
