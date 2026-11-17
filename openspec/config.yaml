@@ -1,0 +1,15 @@
+schema: spec-driven
+context: |
+  Public installation control repository for Fabric Delivery OS on GitHub Free.
+  Draft specifications only; no executable workflow or bootstrap is authorized.
+  Required-reviewer jobs must execute here, not in private solution callers.
+  Agents cannot write control code, administer protections, or approve work.
+  Keep all source identifiers, manifests, prompts, solution code and detailed
+  logs private. Public runs use opaque references and allowlisted status only.
+  One-person operation permits the same human in multiple explicit roles.
+  Framework contracts are defined in the public Fabric-Delivery-OS repository.
+rules:
+  specs:
+    - Include denial, rejection, stale approval, replay, and privacy scenarios.
+  tasks:
+    - Require human approval before implementing or dispatching a smoke workflow.
