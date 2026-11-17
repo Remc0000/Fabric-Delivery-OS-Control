@@ -12,38 +12,28 @@ steps before the human made a decision.
 The temporary workflow was disabled before its environment was removed.
 The human merged its evidence/cleanup change and removed its definition.
 No runtime, private dispatcher, federation, or Azure/Fabric operations are
-implemented in this control repository. The unauthorized-bot case remains
-untested pending the separately authorized follow-up below.
+implemented in this control repository. A separately authorized follow-up also
+demonstrated refusal of the ephemeral GitHub Actions bot token.
 
-## Bot-denial follow-up
+## Bot-denial result
 
-The proposed `.github/workflows/bot-denial-proof.yml` uses only manual dispatch
-from branch `main`, with no checkout, external actions, private input, or cloud
-access. It requires human review and merge before execution. A fresh temporary
-environment `approval-bot-test` must require the sole designated human, allow
-only branch `main`, and disable administrator bypass.
+[Run 44172361707](https://github.com/Remc0000/Fabric-Delivery-OS-Control/actions/runs/44172361707)
+used only its ephemeral Actions token with `actions: read` and
+`deployments: write`. Authenticated reads worked and reported that this token
+could not approve. Its single approval attempt received the exact HTTP 422
+validation refusal that no deployment was reviewable by that bot. Fresh reads
+confirmed the same gate was still waiting with no runner and no steps.
+The probe job succeeded and independent review-history reads were empty.
 
-One job waits at that gate. An independent synthetic probe uses only its
-ephemeral GitHub Actions token with `actions: read` and `deployments: write`,
-not the human dispatcher's credentials. It verifies authenticated reads work
-and that the bot is ineligible, attempts approval once, and requires a
-classified refusal: HTTP 403 for integration access, or HTTP 422 with the
-exact validation error that no deployment is reviewable by this bot. It must
-then confirm the same gate is still waiting with no runner and no executed steps.
+The waiting run was cancelled without submitting any review. After all jobs
+were terminal, the workflow was verified disabled before its temporary
+environment was removed. Its disabled definition and local unit checks are
+removed through the evidence/cleanup change; it must remain disabled until
+human merge. The immutable tested revision is linked in the OpenSpec design.
 
-This tests the Actions installation token, not an independently installed
-future runtime App. An API unsupported for integrations is an integration
-authentication boundary, not evidence that every reviewer policy or future
-identity has been tested. Unexpected responses, missing gates, read failures,
-or a released job fail the proof rather than count as refusal. An arbitrary
-HTTP 422, such as a malformed payload, does not count as proof.
-
-Do not manually approve this run. After evidence collection, cancel the waiting
-run, verify termination, disable the workflow, and only then delete its
-temporary environment. Remove the disabled definition through human review.
-
-Run the probe's local false-positive checks without network access using
-`python -m unittest discover -s tests -v`. Mocked checks are not live proof.
+This proves refusal for this Actions installation token, not every future
+runtime identity. The earlier unclassified HTTP 422 attempt is retained as an
+inconclusive result, not retroactively called a successful proof.
 
 ## Synthetic proof results
 

@@ -3,8 +3,10 @@ context: |
   Public installation control repository for Fabric Delivery OS on GitHub Free.
   Initial specifications are merged. Only the bounded manual synthetic gate
   proof had separate human authorization. Approval/rejection were observed;
-  its workflow and environment are removed. A separately authorized bot-denial
-  follow-up is proposed; human merge is required before dispatch.
+  its workflow and environment are removed. The separately authorized
+  Actions-token bot-denial follow-up was observed and its temporary workflow
+  disabled before its environment was removed. Future runtime identities
+  still require their own verification.
   This control test does not authorize cloud bootstrap or real delivery.
   Required-reviewer jobs must execute here, not in private solution callers.
   Runtime agents cannot write control code, administer protections, or approve

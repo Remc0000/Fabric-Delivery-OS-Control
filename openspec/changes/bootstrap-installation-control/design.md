@@ -7,9 +7,10 @@ human-authorization and information-boundary contracts.
 The initial framework and control specifications were human-merged. Only the
 bounded synthetic proof subsequently received explicit implementation
 authorization. After the human merged its workflow, the native approval and
-rejection cases were exercised. Bot denial remains untested. The temporary
-workflow was disabled before its environment was removed. No released runtime
-version is implied.
+rejection cases were exercised, followed by a separately authorized Actions
+bot-token denial case. Both temporary workflows were disabled before their
+environments were removed. Future runtime identities still require their own
+verification. No released runtime version is implied.
 
 ## Goals / Non-Goals
 
@@ -150,7 +151,7 @@ log inspection after execution. Pending evidence is not a successful test.
 | Job blocked with no executed steps | Observed `status=waiting`, no runner, and `steps=[]` for both runs before either review decision |
 | Human-approved run executes fixed action | [Run 44166554472](https://github.com/Remc0000/Fabric-Delivery-OS-Control/actions/runs/44166554472): review history `approved` by the designated human; conclusion `success`; fixed completion step succeeded |
 | Separately human-rejected run executes no action | [Run 44166850165](https://github.com/Remc0000/Fabric-Delivery-OS-Control/actions/runs/44166850165): review history `rejected` by the designated human; conclusion `failure`; no runner and `steps=[]` |
-| Representative non-reviewer/bot cannot approve | Untested; no authorized test identity supplied |
+| Representative non-reviewer/bot cannot approve | Follow-up below verified refusal of an ephemeral Actions installation token; no claim about every future runtime identity |
 | Public logs and artifacts contain only permitted synthetic output | Complete approved-run log inspected: GitHub runner/setup metadata and the literal synthetic command/status only; rejected run executed no steps; artifact counts were zero for both |
 | Temporary environment removed and workflow disabled | After both runs completed, API verified workflow `disabled_manually` before deleting the temporary environment; fresh environment listing returned zero configured environments |
 
@@ -175,14 +176,14 @@ environment so a later manual dispatch cannot recreate it without protection.
 Do not delete the environment while any test run is waiting or active. A
 human-reviewed cleanup PR can then remove the disabled workflow. Never report
 the gate proof as complete while its required manual cases remain pending;
-the missing bot case must remain explicitly unproven.
+any untested identity case must remain explicitly unproven.
 
 ## Separately authorized Actions bot-denial follow-up
 
 On 2026-11-17 the human explicitly requested the missing bot-denial test. The
-new workflow `.github/workflows/bot-denial-proof.yml` requires human review
-and merge before dispatch; it does not reactivate the removed first workflow.
-There are no private inputs, external actions, checkout, or cloud credentials.
+new workflow `.github/workflows/bot-denial-proof.yml` received human review
+and merge before dispatch; it did not reactivate the removed first workflow.
+There were no private inputs, external actions, checkout, or cloud credentials.
 
 Use the ephemeral GitHub Actions installation token as a concrete non-reviewer
 bot, not a human credential or an assumed external App secret. Its independent
@@ -211,17 +212,17 @@ test from an absent/invalid credential, and fresh post-attempt reads must show
 the same gate is still blocked. Other responses or errors fail explicitly.
 No response body or token is printed publicly.
 
-This establishes refusal for an Actions installation token through that
-integration-access boundary. It does not isolate a reviewer-membership check
-for an otherwise supported user credential, nor validate a future runtime
+This establishes refusal for an Actions installation token through the
+integration/caller-scoped review boundary. It does not isolate a
+reviewer-membership check for an otherwise supported user credential, nor validate a future runtime
 App's exact installation and permissions. Do not overstate the result.
 
 The human must not approve the waiting test. After independently inspecting
 the probe's outcome, gate state, and empty review history, cancel the run
 without submitting a review. Verify terminal jobs, disable the workflow,
 then delete the temporary environment. A human-reviewed cleanup PR removes
-the disabled workflow and records actual evidence. All results remain pending
-until observed.
+the disabled workflow and records actual evidence. Pending results cannot be
+treated as observed results.
 
 ### Initial follow-up attempt, not accepted as completed proof
 
@@ -236,5 +237,39 @@ without submitting any review; the gated job ended with no executed steps.
 
 The classifier correction adds only the specific caller-filtered validation
 denial above, with tests rejecting unrelated HTTP 422 responses. Its exact
-revision requires human review/merge and a new observed run before this
-negative case can be reported complete.
+revision subsequently received human review/merge and a new observed run,
+recorded below, rather than retroactively relabeling the initial attempt.
+
+### Observed classified bot denial and cleanup
+
+The human merged the classifier correction through
+[Remc0000/Fabric-Delivery-OS-Control#6](https://github.com/Remc0000/Fabric-Delivery-OS-Control/pull/6).
+The successful probe used workflow commit
+`3c8ab11dfb2660dd451d701e11458527c67bc868`; its
+[immutable workflow](https://github.com/Remc0000/Fabric-Delivery-OS-Control/blob/3c8ab11dfb2660dd451d701e11458527c67bc868/.github/workflows/bot-denial-proof.yml)
+and local false-positive checks remain available at that revision.
+
+| Check | Observed result |
+| --- | --- |
+| Live run | [44172361707](https://github.com/Remc0000/Fabric-Delivery-OS-Control/actions/runs/44172361707), using the exact human-merged workflow |
+| Effective probe permissions | Job setup showed `Actions: read`, `Deployments: write`, and platform metadata read; the token came only from `github.token` |
+| Valid token and reviewer eligibility | Authenticated pending-deployment/job reads succeeded and the bot saw `current_user_can_approve=false` |
+| Native gate protection | Fresh pre-dispatch reads verified the sole designated human, the agreed solo profile, `can_admins_bypass=false`, and only branch `main` |
+| Bot review attempt | Exactly one POST; HTTP 422 with the exact no-reviewable-request validation reason; classified as `no-reviewable-deployment-for-bot` |
+| Gate after bot attempt | Probe and independent API reads confirmed the same environment still pending; native job waiting, no runner, no steps |
+| Human review history | Empty before cancellation and again after termination; no human approval or rejection was submitted |
+| Probe outcome | `Assert non-reviewer bot denial` completed successfully |
+| Waiting-job termination | Run cancelled without review after evidence capture; human-gated job ended `cancelled` with no executed steps |
+| Public output | Complete probe-job log inspected: GitHub setup metadata, the fixed reviewed script, masked token, and allowlisted synthetic statuses; zero artifacts |
+| Safe cleanup | Both attempts terminal; API verified workflow `disabled_manually` before deleting `approval-bot-test`; fresh listing showed zero environments |
+
+The overall run is intentionally cancelled because its human-gated job must
+never be released during this negative test. That cancellation is cleanup,
+not the refusal evidence: the successful probe, classified response, unchanged
+waiting gate, and empty review history establish the bounded negative case.
+
+Remove the remaining disabled workflow and its workflow-specific unit checks
+through the human-reviewed evidence/cleanup PR. This result completes the
+representative Actions-token case only. The future runtime App's exact
+credentials and permissions, private request binding, replay controls, and
+Azure worker isolation still require separate implementation and proof.
