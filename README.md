@@ -10,10 +10,38 @@ Free in this public repository. Both runs waited without a runner or executed
 steps before the human made a decision.
 
 The temporary workflow was disabled before its environment was removed.
-The evidence/cleanup change removes its executable definition; until that
-change is human-merged, the definition on `main` must remain disabled.
+The human merged its evidence/cleanup change and removed its definition.
 No runtime, private dispatcher, federation, or Azure/Fabric operations are
-implemented or authorized. The unauthorized-bot case remains untested.
+implemented in this control repository. The unauthorized-bot case remains
+untested pending the separately authorized follow-up below.
+
+## Bot-denial follow-up
+
+The proposed `.github/workflows/bot-denial-proof.yml` uses only manual dispatch
+from branch `main`, with no checkout, external actions, private input, or cloud
+access. It requires human review and merge before execution. A fresh temporary
+environment `approval-bot-test` must require the sole designated human, allow
+only branch `main`, and disable administrator bypass.
+
+One job waits at that gate. An independent synthetic probe uses only its
+ephemeral GitHub Actions token with `actions: read` and `deployments: write`,
+not the human dispatcher's credentials. It verifies authenticated reads work
+and that the bot is ineligible, attempts approval once, and requires HTTP 403
+with the classified integration-access denial. It must then confirm the same
+gate is still waiting with no runner and no executed steps.
+
+This tests the Actions installation token, not an independently installed
+future runtime App. An API unsupported for integrations is an integration
+authentication boundary, not evidence that every reviewer policy or future
+identity has been tested. Unexpected responses, missing gates, read failures,
+or a released job fail the proof rather than count as refusal.
+
+Do not manually approve this run. After evidence collection, cancel the waiting
+run, verify termination, disable the workflow, and only then delete its
+temporary environment. Remove the disabled definition through human review.
+
+Run the probe's local false-positive checks without network access using
+`python -m unittest discover -s tests -v`. Mocked checks are not live proof.
 
 ## Synthetic proof results
 

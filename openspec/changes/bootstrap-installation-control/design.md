@@ -166,9 +166,9 @@ this negative case. Conversely, neither outcome establishes refusal of an
 unauthorized agent identity, manifest binding, replay prevention, federation,
 or worker isolation.
 
-The remaining disabled workflow definition is removed through a separate
-human-reviewed evidence/cleanup PR. No additional workflow activation or cloud
-bootstrap is authorized by recording these results.
+The human merged the evidence/cleanup change and removed that disabled
+workflow definition. No additional workflow activation or cloud bootstrap is
+authorized by recording these results.
 
 After capturing evidence, disable the workflow before deleting the temporary
 environment so a later manual dispatch cannot recreate it without protection.
@@ -176,3 +176,43 @@ Do not delete the environment while any test run is waiting or active. A
 human-reviewed cleanup PR can then remove the disabled workflow. Never report
 the gate proof as complete while its required manual cases remain pending;
 the missing bot case must remain explicitly unproven.
+
+## Separately authorized Actions bot-denial follow-up
+
+On 2026-11-17 the human explicitly requested the missing bot-denial test. The
+new workflow `.github/workflows/bot-denial-proof.yml` requires human review
+and merge before dispatch; it does not reactivate the removed first workflow.
+There are no private inputs, external actions, checkout, or cloud credentials.
+
+Use the ephemeral GitHub Actions installation token as a concrete non-reviewer
+bot, not a human credential or an assumed external App secret. Its independent
+probe job has only `actions: read` and `deployments: write`; all workflow-level
+permissions and the gated job's token permissions are empty. The only possible
+gated action remains the literal synthetic completion message.
+
+The temporary environment `approval-bot-test` requires the designated human
+under the agreed solo profile, disables administrator bypass, and permits
+only branch `main`. Verify those settings and the exact human-merged workflow
+before dispatch. The probe waits a bounded time for that environment to become
+pending, verifies its token's `current_user_can_approve=false`, and confirms
+the gated job is waiting with no runner and no steps.
+
+It attempts exactly one approval using only `github.token`. The expected
+response is HTTP 403, `Resource not accessible by integration`. This
+classification follows the official GitHub REST/OpenAPI contract: the review
+endpoint is not enabled for GitHub Apps. Successful pending-deployment and
+job reads distinguish the test from an absent/invalid credential, and fresh
+post-attempt reads must show the same gate is still blocked. Other responses
+or errors fail explicitly. No response body or token is printed publicly.
+
+This establishes refusal for an Actions installation token through that
+integration-access boundary. It does not isolate a reviewer-membership check
+for an otherwise supported user credential, nor validate a future runtime
+App's exact installation and permissions. Do not overstate the result.
+
+The human must not approve the waiting test. After independently inspecting
+the probe's outcome, gate state, and empty review history, cancel the run
+without submitting a review. Verify terminal jobs, disable the workflow,
+then delete the temporary environment. A human-reviewed cleanup PR removes
+the disabled workflow and records actual evidence. All results remain pending
+until observed.

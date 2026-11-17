@@ -8,6 +8,12 @@ The human-operated approval/rejection cases were observed; bot denial remains
 untested. The temporary workflow was disabled before its environment was
 removed. Do not reactivate it or infer runtime/cloud approval from this proof.
 
+The human separately authorized the synthetic bot-denial test on 2026-11-17.
+Its new workflow requires human review and merge. Only its ephemeral GitHub
+Actions installation token may attempt the negative-case approval; never
+substitute a human token. No cloud or private-delivery authority is granted
+by this control test.
+
 Never approve a workflow with a human token. The authorized human performs the
 approval. Do not remove protections or use an unprotected environment as a
 fallback.
