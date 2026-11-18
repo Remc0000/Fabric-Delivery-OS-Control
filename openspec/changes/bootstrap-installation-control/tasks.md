@@ -15,18 +15,18 @@ table for observed manual results, cleanup, and untested boundaries.
 - [x] 2.3 Start an authorized synthetic request and stop before approval; verify its action has not executed.
 - [x] 2.4 Let the designated human approve through GitHub; verify the resulting action and reviewer evidence without the assistant submitting approval.
 - [x] 2.5 Start and manually reject a separate request; verify no action executes.
-- [ ] 2.6 Exercise a representative unauthorized agent identity if authorized credentials exist; verify refusal, otherwise explicitly record the missing proof.
+- [x] 2.6 Exercise a representative unauthorized agent identity if authorized credentials exist; verify refusal, otherwise explicitly record the missing proof.
 - [x] 2.7 Inspect public logs and artifacts and clean up temporary test resources; verify only synthetic references and no unintended public content remain.
 - [x] 2.8 Disable the workflow before deleting the temporary environment after all runs are terminal.
 - [x] 2.9 Obtain human review and merge of the evidence/cleanup PR to remove the disabled workflow definition.
 
 ## 2a. Separately authorized bot-denial follow-up
 
-- [ ] 2a.1 Review and human-merge the exact manual Actions bot-denial workflow; verify no human approval credential or cloud/private input is used.
+- [x] 2a.1 Review and human-merge the exact manual Actions bot-denial workflow; verify no human approval credential or cloud/private input is used.
 - [x] 2a.2 Configure and re-read the temporary human-only environment, disabled administrator bypass, and branch-only main restriction.
-- [ ] 2a.3 Observe authenticated bot reads, explicit reviewer ineligibility, the classified refusal, and the same job still waiting with no executed steps.
-- [ ] 2a.4 Independently verify review history and public output; record the exact token-class boundary and any unproven identity cases.
-- [ ] 2a.5 Cancel the waiting run without review, verify all jobs terminal, disable the workflow, then delete its environment.
+- [x] 2a.3 Observe authenticated bot reads, explicit reviewer ineligibility, the classified refusal, and the same job still waiting with no executed steps.
+- [x] 2a.4 Independently verify review history and public output; record the exact token-class boundary and any unproven identity cases.
+- [x] 2a.5 Cancel the waiting run without review, verify all jobs terminal, disable the workflow, then delete its environment.
 - [ ] 2a.6 Obtain human review and merge of bot-proof evidence and disabled-workflow removal.
 
 ## 3. Separately approved private dispatch
